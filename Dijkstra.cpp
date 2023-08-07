@@ -4,6 +4,7 @@
 using namespace std;
 vector<pair<int,int> >v[20];
 vector<int>dist(20,INT_MAX);
+vector<int>way[20];
 void init(){
     v[1].push_back({2, 9});
     v[1].push_back({7, 14});
@@ -50,23 +51,36 @@ void dijkstra(int s)
     {
         node=pq.top().second;
         cost=-pq.top().first;
-        if(dist[node]<cost)continue;
         pq.pop();
+        if(dist[node]<cost)continue;
         for(int i=0;i<v[node].size();i++)
         {
-            nnode=v[node][i].second;
-            if(dist[nnode]>dist[node]+v[node][i].first)
+            nnode=v[node][i].first;
+            if(dist[nnode]>dist[node]+v[node][i].second)
             {
-                dist[nnode]=dist[node]+v[node][i].first;
+                way[nnode].clear();
+                way[nnode].push_back(node);
+                dist[nnode]=dist[node]+v[node][i].second;
                 pq.push({-dist[nnode], nnode});
             }
         }
     }
 }
 int main() {
-    int start,end;scanf("%d %d",&start,&end);
+    int start,End;
+    init();
+    scanf("%d %d",&start,&End);
     dijkstra(start);
-    printf("%d",dist[end]);
+    printf("%d\n",dist[End]);
+    int now;
+    now=End;
+    while(1)
+    {
+        printf("%d ",now);
+        now=way[now][0];
+        if(now==1)break;
+    }
+
 
     return 0;
 }
