@@ -3,7 +3,10 @@
 #include <queue>
 using namespace std;
 vector<pair<int,int> >v[20];
+int start,End;
+int nosun[20][5],cur,cnt;
 vector<int>dist(20,INT_MAX);
+vector<int> route[1000];
 vector<int>way[20];
 void init(){
     v[1].push_back({2, 9});
@@ -39,6 +42,25 @@ void init(){
             v[p].push_back({i, v[i][j].second});
         }
     }
+    nosun[1][1]=1;
+    nosun[2][1]=1;
+    nosun[3][1]=1, nosun[3][3]=1;
+    nosun[4][1]=1, nosun[4][3]=1;
+    nosun[5][1]=1, nosun[5][4]=1;
+    nosun[6][3]=1;
+    nosun[7][1]=1;
+    nosun[8][3]=1, nosun[8][4]=1;
+    nosun[9][3]=1, nosun[9][4]=1;
+    nosun[10][1]=1, nosun[10][3]=1, nosun[10][4]=1;
+    nosun[11][1]=1, nosun[11][3]=1;
+    nosun[12][1]=1;
+    nosun[13][1]=1, nosun[13][4]=1;
+    nosun[14][1]=1, nosun[14][4]=1;
+    nosun[15][2]=1, nosun[15][3]=1, nosun[15][4]=1;
+    nosun[16][2]=1, nosun[16][4]=1;
+    nosun[17][2]=1, nosun[17][4]=1;
+    nosun[18][2]=1, nosun[18][4]=1;
+
 }
 
 void dijkstra(int s)
@@ -66,20 +88,60 @@ void dijkstra(int s)
         }
     }
 }
+
+void fin(int now, int cnt, int prev)
+{
+
+    for(int i=1;i<=4;i++)
+    {
+        if(nosun[now][i]&&nosun[prev][i])
+        {
+            route[cur].push_back(i);
+            if(now!=start)
+            fin(way[now][0], 0, now);
+            for(int j=0;j<route[cur].size()-1;j++)
+            {
+                route[cur+1].push_back(route[cur][j]);
+            }
+            cur++;
+        }
+    }
+}
+
 int main() {
-    int start,End;
+
     init();
     scanf("%d %d",&start,&End);
     dijkstra(start);
     printf("%d\n",dist[End]);
     int now;
     now=End;
+    fin(way[now][0], 0, End);
     while(1)
     {
-        printf("%d ",now);
+        printf("%d\n", now);
         now=way[now][0];
-        if(now==1)break;
+        cnt++;
+        if(now==start)break;
     }
+
+    printf("%d\n", cur);
+    for(int i=0;i<=cur;i++)
+    {
+        if(route[i].size()==cnt){
+            for(int j=0;j<route[i].size();j++)
+                printf("%d ", route[i][j]);
+        printf("\n");
+        }
+    }
+    /*if(nosun[End][1])
+    findroute(way[now][0], 0, End);
+    if(nosun[End][2])
+    findroute(way[now][0], 0, 2);
+    if(nosun[End][3])
+    findroute(way[now][0], 0, 3);
+    if(nosun[End][4])
+    findroute(way[now][0], 0, 4);*/
 
 
     return 0;
