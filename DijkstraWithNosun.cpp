@@ -8,6 +8,11 @@ int nosun[20][5],cur,cnt;
 vector<int>dist(20,INT_MAX);
 vector<int> route[1000];
 vector<int>way[20];
+string name[18]={"독립문", "사직공원", "경복궁", "창경궁", "동대문", "인사동",
+                 "서대문역", "청계천", "종로2가", "시청", "을지로2가", "을지로4가",
+                 "DDP", "서울역", "명동역", "N타워", "서울신라호텔", "남산공원"};
+string line[4]={"도심외부순환", "남산순환", "도시내부순환", "남산연계"};
+
 void init(){
     v[1].push_back({2, 9});
     v[1].push_back({7, 14});
@@ -87,9 +92,10 @@ void dijkstra(int s)
             }
         }
     }
+
 }
 
-void fin(int now, int cnt, int prev)
+void fin(int now, int prev)
 {
 
     for(int i=1;i<=4;i++)
@@ -97,8 +103,7 @@ void fin(int now, int cnt, int prev)
         if(nosun[now][i]&&nosun[prev][i])
         {
             route[cur].push_back(i);
-            if(now!=start)
-            fin(way[now][0], 0, now);
+            if(now!=start)fin(way[now][0], now);
             for(int j=0;j<route[cur].size()-1;j++)
             {
                 route[cur+1].push_back(route[cur][j]);
@@ -107,33 +112,64 @@ void fin(int now, int cnt, int prev)
         }
     }
 }
-
+int findn(string s){
+    for(int i=0;i<18;i++){
+        if(name[i]==s)return i+1;
+    }
+}
 int main() {
+    string st, ed;
+
+    printf("출발지를 입력해주세요: ");
+    cin>>st;
+    End=findn(st);
+
+    printf("도착지를 입력해주세요: ");
+    cin>>ed;
+    start=findn(ed);
 
     init();
-    scanf("%d %d",&start,&End);
+
     dijkstra(start);
-    printf("%d\n",dist[End]);
+    printf("친환경적 최단거리: %d\n",dist[End]);
     int now;
     now=End;
-    fin(way[now][0], 0, End);
+    fin(way[now][0], End);
+
+    printf("순서대로 지나가야하는 정류장: ");
     while(1)
     {
-        printf("%d\n", now);
+        cout<<name[now-1]<<" ";
         now=way[now][0];
         cnt++;
         if(now==start)break;
     }
+    printf("\n");
+    //printf("%d\n", cur);
 
-    printf("%d\n", cur);
+    int prior;
+    int mi=2000000;
+    int count;
     for(int i=0;i<=cur;i++)
     {
-        if(route[i].size()==cnt){
-            for(int j=0;j<route[i].size();j++)
-                printf("%d ", route[i][j]);
-        printf("\n");
+        count=0;
+        if(route[i].size()==cnt)
+        {
+            for(int j=1;j<cnt;j++)
+            {
+                if(route[i][j]!=route[i][j-1])count++;
+            }
+            if(count<mi)
+            {
+                mi=count;
+                prior=i;
+            }
         }
     }
+
+    printf("탑승해야하는 버스순환경로: ");
+    for(int i=0;i<cnt;i++)cout<<line[route[prior][i]-1]<<" ";
+
     /*if(nosun[End][1])
     findroute(way[now][0], 0, End);
     if(nosun[End][2])
